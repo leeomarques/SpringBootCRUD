@@ -1,34 +1,30 @@
 package br.com.springboot.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.springboot.domain.Pessoa;
+import br.com.springboot.repository.PessoaRepository;
 
+//CAMADA SERVIÇO - Onde fica toda a nossa Regra de Negócio
 @Service
 public class PessoaService {
 
-	private List<Pessoa> pessoas = new ArrayList<Pessoa>();
+	@Autowired
+	PessoaRepository pessoaRepository;
 
 	public Pessoa salvar(Pessoa pessoa) {
 		if (pessoa.getId() != null) {
 			throw new RuntimeException("Não precisa de ID");
 		}
+		return pessoaRepository.save(pessoa);
 
-		if (pessoas.size() == 0) {
-			pessoa.setId(1l);
-		} else {
-			pessoa.setId((pessoas.get(pessoas.size() - 1).getId() + 1));
-		}
-
-		pessoas.add(pessoa);
-		return null;
 	}
 
 	public List<Pessoa> listar() {
-		return pessoas;
+		return pessoaRepository.findAll();
 	}
 
 	public Pessoa atualizar(Pessoa pessoa, Long id) {
@@ -36,24 +32,30 @@ public class PessoaService {
 			throw new RuntimeException("Precisa de ID");
 		}
 
-		for (Pessoa pessoaLista : pessoas) {
-			if (pessoaLista.getId() == id) {
-				pessoaLista.setNome(pessoa.getNome());
-				pessoa.setId(id);
-			}
+		Pessoa pessoaId = pessoaRepository.findById(id).orElse(null);
+
+		if (pessoaId == null) {
+			throw new RuntimeException("Não existe pessoa com esse ID");
+
 		}
-		return pessoa;
+
+		pessoaId.setNome(pessoa.getNome());
+		return pessoaRepository.save(pessoaId);
 	}
 
 	public void deletar(Long id) {
 		if (id == 0) {
 			throw new RuntimeException("Precisa de ID");
 		}
-		for (Pessoa pessoaLista : pessoas) {
-			if (pessoaLista.getId() == id) {
-				pessoas.remove(pessoaLista);
-			}
-		}
+		pessoaRepository.deleteById(id);
+	}
+
+	public Pessoa listarPorNome(Pessoa pessoa) {
+		return pessoaRepository.findByNome(pessoa.getNome());
+	}
+
+	public Pessoa listarPorCpf(Pessoa pessoa) {
+		return pessoaRepository.buscaPorCpf(pessoa.getCpf());
 	}
 
 }

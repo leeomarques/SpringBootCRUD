@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.springboot.domain.Pessoa;
 import br.com.springboot.service.PessoaService;
 
+//CAMADA REST - é uma Entrada com comunicação com as outras API's
 @RestController
 @RequestMapping("/api")
 public class PessoaResource {
@@ -44,6 +45,16 @@ public class PessoaResource {
 	public ResponseEntity<Void> deletarPessoa(@PathVariable Long id) {
 		pessoaService.deletar(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/pessoa/nome")
+	public ResponseEntity<Pessoa> listarPessoaPorNome(Pessoa pessoa) {
+		return ResponseEntity.ok().body(pessoaService.listarPorNome(pessoa));
+	}
+
+	@GetMapping("/pessoa/cpf")
+	public ResponseEntity<Pessoa> listarPessoaPorCpf(Pessoa pessoa) {
+		return ResponseEntity.ok().body(pessoaService.listarPorCpf(pessoa));
 	}
 
 }
