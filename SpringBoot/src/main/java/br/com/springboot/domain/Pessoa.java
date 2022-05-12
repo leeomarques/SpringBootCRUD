@@ -22,6 +22,7 @@ public class Pessoa {
 	@NotNull
 	private String nome;
 
+	
 	@Column(unique = true)
 	@CPF
 	@NotNull
